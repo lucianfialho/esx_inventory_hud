@@ -14,13 +14,10 @@ ESX.RegisterServerCallback('esx_inventory_hud:GetPlayerPersonalData', function(p
     playerPersonalData.lastName = xPlayer.get('lastName')
     playerPersonalData.dateOfBirth = xPlayer.get('dateofbirth')
     
+    local formattedMoney = _U('locale_currency', ESX.Math.GroupDigits(xPlayer.getAccount('bank').money))
     
-    for k,v in pairs(xPlayer.get('accounts')) do
-        if v.name ~= 'bank' then
-			local formattedMoney = _U('locale_currency', ESX.Math.GroupDigits(v.money))
-			playerPersonalData.bank = formattedMoney
-		end
-    end
-
+    playerPersonalData.bank = formattedMoney
+    playerPersonalData.job = xPlayer.getJob()
+    
     cb(playerPersonalData)
 end)
