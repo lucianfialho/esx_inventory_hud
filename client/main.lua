@@ -213,6 +213,7 @@ RegisterNetEvent('esx_inventory_hud:playerLoaded')
 AddEventHandler('esx_inventory_hud:playerLoaded', function(playerData)
 	SetNuiFocus(false,false)
 	DeleteSkinCam()
+	DisplayRadar(false)
 
 	local items = GetInventoryData()
 	local loadout = GetLoadoutData()
@@ -224,7 +225,7 @@ AddEventHandler('esx_inventory_hud:playerLoaded', function(playerData)
 			showInventoryHud = true,
 			items = items,
 			user = playerPersonalData,
-			loadout = playerWeaponData
+			loadout = loadout
 		})
 	end)	
 end)

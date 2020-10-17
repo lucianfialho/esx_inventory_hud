@@ -1,0 +1,3 @@
+[submodule "inventory_hud"]
+	path = inventory_hud
+	url = https://github.com/lucianfialhobp/inventory_hud.git
