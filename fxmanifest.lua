@@ -9,14 +9,15 @@ server_scripts {
 }
 
 client_scripts {
+	'client/weapon.lua',
+	'client/camera.lua',
 	'client/main.lua',
 }
 
-shared_scripts {
+shared_script {
 	'@es_extended/locale.lua',
-	'@es_extended/locales/en.lua',
-	'@es_extended/config.lua',
-	'@es_extended/config.weapons.lua',
+	'locales/*.lua',
+	'config.lua',
 }
 
 ui_page 'inventory_hud/dist/index.html'
