@@ -6,113 +6,30 @@ Citizen.CreateThread(function()
 		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 		Citizen.Wait(0)
 	end 
-	
+	--  Disable Weapon Wheel HUD
+	while true do 
+		Citizen.Wait(0)
+		HideHudComponentThisFrame(19 --[[ integer ]])
+	end
+	DisableControlAction(2, 37, true)
+	SetNuiFocus(false, false)
 end)
 
-function CreateSkinCam()
-    if not DoesCamExist(cam) then
-        cam = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
-    end
 
-    local playerPed = PlayerPedId()
+RegisterCommand("inventory", function()
+	TriggerEvent('esx_inventory_hud:openInventory')
+end)
 
-    SetCamActive(cam, true)
-    RenderScriptCams(true, true, 500, true, true)
+RegisterKeyMapping("inventory", "Toggle inventory", "keyboard", "tab")
 
-    isCameraActive = true
-    SetCamRot(cam, 0.0, 0.0, 270.0, true)
-    SetEntityHeading(playerPed, 0.0)
-end
+function ToogleInventory() 
+	inventoryIsOpen = not inventoryIsOpen
 
-function DeleteSkinCam()
-    isCameraActive = false
-    SetCamActive(cam, false)
-    RenderScriptCams(false, true, 500, true, true)
-    cam = nil
-end
-
-function loadCamera(camOffset, zoomOffset)
-    CreateSkinCam()
-
-    DisableControlAction(2, 30, true)
-    DisableControlAction(2, 31, true)
-    DisableControlAction(2, 32, true)
-    DisableControlAction(2, 33, true)
-    DisableControlAction(2, 34, true)
-    DisableControlAction(2, 35, true)
-    DisableControlAction(0, 25, true) -- Input Aim
-    DisableControlAction(0, 24, true) -- Input Attack
-
-    local angle = 90
-    
-    if isCameraActive then
-        if angle > 360 then
-            angle = angle - 360
-        elseif angle < 0 then
-            angle = angle + 360
-        end
-
-        heading = angle + 0.0
-    end
-
-    local playerPed = PlayerPedId()
-    local coords    = GetEntityCoords(playerPed)
-
-    local angle = heading * math.pi / 180.0
-    local theta = {
-        x = math.cos(angle),
-        y = math.sin(angle)
-    }
-
-
-    local pos = {
-        x = coords.x + (zoomOffset * theta.x),
-        y = coords.y + (zoomOffset * theta.y)
-    }
-
-
-    local angleToLook = heading - 140.0
-    if angleToLook > 360 then
-        angleToLook = angleToLook - 360
-    elseif angleToLook < 0 then
-        angleToLook = angleToLook + 360
-    end
-
-    angleToLook = angleToLook * math.pi / 180.0
-    local thetaToLook = {
-        x = math.cos(angleToLook),
-        y = math.sin(angleToLook)
-    }
-
-    local posToLook = {
-        x = coords.x + (zoomOffset * thetaToLook.x),
-        y = coords.y + (zoomOffset * thetaToLook.y)
-    }
-
-    cam = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
-
-    SetCamCoord(cam, pos.x, pos.y, coords.z + camOffset)
-    PointCamAtCoord(cam, posToLook.x - 6.5, posToLook.y, coords.z + camOffset)
-
-end
-
-local function GetIntFromBlob(b, s, o)
-	r = 0
-	for i=1,s,1 do
-		r = r | (string.byte(b,o+i)<<(i-1)*8)
+	if inventoryIsOpen == true then
+		TriggerEvent('esx_inventory_hud:openInventory')
+	else
+		TriggerEvent('esx_inventory_hud:closeInventory')
 	end
-	return r
-end
-
-function GetWeaponHudStats(weaponHash, none)
-	blob = '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'
-	retval = Citizen.InvokeNative(0xD92C739EE34C9EBA, weaponHash, blob, Citizen.ReturnResultAnyway())
-	hudDamage = GetIntFromBlob(blob,8,0)
-	hudSpeed = GetIntFromBlob(blob,8,8)
-	hudCapacity = GetIntFromBlob(blob,8,16)
-	hudAccuracy = GetIntFromBlob(blob,8,24)
-	hudRange = GetIntFromBlob(blob,8,32)
-	return retval, hudDamage, hudSpeed, hudCapacity, hudAccuracy, hudRange
 end
 
 function GetLoadoutData()
@@ -121,7 +38,7 @@ function GetLoadoutData()
 
 	for k,v in ipairs(loadout) do
 		local weaponHash = GetHashKey(v.name)
-        
+
         _,hudDamage,hudSpeed,hudCapacity,hudAccuracy,hudRange = GetWeaponHudStats(weaponHash)
 
         table.insert(playerWeaponData, {
@@ -144,7 +61,6 @@ function GetLoadoutData()
             }
         })
 	end
-	
 
 	return playerWeaponData
 end
@@ -175,14 +91,11 @@ function GetInventoryData()
 	end
 
 	for k,v in pairs(ESX.PlayerData.accounts) do
-		if v.money > 0 then
+		
+		if v.name ~= 'bank' and v.money > 0 then
 			local formattedMoney = _U('locale_currency', ESX.Math.GroupDigits(v.money))
 			local canDrop = v.name ~= 'bank'
 			local icon
-
-			if v.name == 'bank' then
-				icon = 'money-check-alt'
-			end
 
 			if v.name == 'money' then
 				icon = 'money-bill-alt'
@@ -206,13 +119,10 @@ function GetInventoryData()
 	return items
 end
 
-
-
-
-RegisterNetEvent('esx_inventory_hud:playerLoaded')
-AddEventHandler('esx_inventory_hud:playerLoaded', function(playerData)
-	SetNuiFocus(false,false)
+RegisterNetEvent('esx_inventory_hud:openInventory')
+AddEventHandler('esx_inventory_hud:openInventory', function(playerData)
 	DeleteSkinCam()
+	SetNuiFocus(false, false)
 	DisplayRadar(false)
 
 	local items = GetInventoryData()
@@ -230,10 +140,27 @@ AddEventHandler('esx_inventory_hud:playerLoaded', function(playerData)
 	end)	
 end)
 
+RegisterNetEvent('esx_inventory_hud:closeInventory')
+AddEventHandler('esx_inventory_hud:closeInventory', function(playerData)
+	DeleteSkinCam()
+	DisplayRadar(true)
+	SetNuiFocus(false, false)
+	SendNUIMessage({
+		showInventoryHud = false,
+	})
+end)
+
+
+
+RegisterNUICallback('esx_inventory_hud:CloseInventory', function(data, cb)
+	TriggerEvent('esx_inventory_hud:closeInventory')
+	cb(true)
+end)
+
+
 RegisterNUICallback('esx_inventory_hud:UseItem', function(data, cb)
 
 	TriggerServerEvent('esx:useItem', data.data)
-	SetNuiFocus(false, false)
 	
 	SendNUIMessage({
 		showInventoryHud = false,
