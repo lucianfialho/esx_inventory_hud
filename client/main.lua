@@ -1,5 +1,24 @@
 ESX              = nil
 local PlayerData = {}
+local Keys = {
+    ["1"] = 157,
+    ["2"] = 158,
+    ["3"] = 160,
+    ["4"] = 164,
+    ["5"] = 165,
+    ["6"] = 159,
+    ["7"] = 161,
+    ["8"] = 162,
+	["9"] = 163
+}
+
+local fastWeapons = {
+	[1] = nil,
+	[2] = nil,
+	[3] = nil,
+    [4] = nil,
+    [5] = nil
+}
 
 Citizen.CreateThread(function()
 	while ESX == nil do	
@@ -10,6 +29,51 @@ Citizen.CreateThread(function()
 	while true do 
 		Citizen.Wait(0)
 		HideHudComponentThisFrame(19 --[[ integer ]])
+		
+		local playerPed = PlayerPedId()
+		
+		if  IsDisabledControlJustReleased(1,  Keys["1"]) then
+			if fastWeapons[1] ~= nil then
+				-- Setando a arma do ped para a bind marcada
+				SetCurrentPedWeapon(
+					playerPed --[[ Ped ]], 
+					fastWeapons[1] --[[ Hash ]], 
+					true --[[ boolean ]]
+				)
+			end
+		elseif IsDisabledControlJustReleased(1, Keys["2"]) then
+			if fastWeapons[2] ~= nil then
+				SetCurrentPedWeapon(
+					playerPed --[[ Ped ]], 
+					fastWeapons[2] --[[ Hash ]], 
+					true --[[ boolean ]]
+				)
+			end
+		elseif IsDisabledControlJustReleased(1, Keys["3"]) then
+			if fastWeapons[3] ~= nil then
+				SetCurrentPedWeapon(
+					playerPed --[[ Ped ]], 
+					fastWeapons[3] --[[ Hash ]], 
+					true --[[ boolean ]]
+				)
+			end
+		elseif IsDisabledControlJustReleased(1, Keys["4"]) then
+			if fastWeapons[4] ~= nil then
+				SetCurrentPedWeapon(
+					playerPed --[[ Ped ]], 
+					fastWeapons[4] --[[ Hash ]], 
+					true --[[ boolean ]]
+				)
+			end
+		elseif IsDisabledControlJustReleased(1, Keys["5"]) then
+			if fastWeapons[5] ~= nil then
+				SetCurrentPedWeapon(
+					playerPed --[[ Ped ]], 
+					fastWeapons[5] --[[ Hash ]], 
+					true --[[ boolean ]]
+				)
+			end
+		end
 	end
 	DisableControlAction(2, 37, true)
 	SetNuiFocus(false, false)
@@ -52,6 +116,7 @@ function GetLoadoutData()
             canGiveAmmo = (v.ammo ~= nil),
 			canRemove = true,
 			selected = false,
+			bind = nil,
             stats = {
                 damage = hudDamage,
                 fireRate = hudSpeed,
@@ -178,4 +243,12 @@ RegisterNUICallback('esx_inventory_hud:DropItem', function(data, cb)
 	-- SendNUIMessage({
 	-- 	showInventoryHud = false,
 	-- })
+end)
+
+RegisterNUICallback('esx_inventory_hud:SetWeaponBinding', function(data, cb)
+	if data.data.bind ~= nil then
+		fastWeapons[data.data.bind] = nil
+	end
+
+	fastWeapons[tonumber(data.data.bind)] = data.data.value
 end)
