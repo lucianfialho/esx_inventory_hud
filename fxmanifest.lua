@@ -5,13 +5,11 @@ game 'gta5'
 description 'ESX Boilerplate'
 
 server_scripts {
-	'server/main.lua'
+	'server/*.lua'
 }
 
 client_scripts {
-	'client/weapon.lua',
-	'client/camera.lua',
-	'client/main.lua',
+	'client/*.lua',
 }
 
 shared_script {
