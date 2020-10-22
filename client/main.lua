@@ -96,35 +96,53 @@ function ToogleInventory()
 	end
 end
 
+function dump(o)
+    if type(o) == 'table' then
+        local s = '{\n\n'
+        for k,v in pairs(o) do
+            if type(k) ~= 'number' then
+                k = '"'..k..'"' 
+            end
+            s = s .. '['..k..'] = ' .. dump(v) .. ',\n'
+        end
+        return s .. '}\n\n'
+    else
+        return tostring(o)
+    end
+end
+
 function GetLoadoutData()
 	ESX.PlayerData, playerWeaponData = ESX.GetPlayerData(), {}
-	local loadout = ESX.PlayerData.loadout
+	local playerPed = PlayerPedId()
 
-	for k,v in ipairs(loadout) do
+	for k,v in ipairs(Config.Weapons) do
 		local weaponHash = GetHashKey(v.name)
+		
+		if HasPedGotWeapon(playerPed, weaponHash, false) then
+			_,hudDamage,hudSpeed,hudCapacity,hudAccuracy,hudRange = GetWeaponHudStats(weaponHash)
+			local ammo, label = GetAmmoInPedWeapon(playerPed, weaponHash)
 
-        _,hudDamage,hudSpeed,hudCapacity,hudAccuracy,hudRange = GetWeaponHudStats(weaponHash)
-
-        table.insert(playerWeaponData, {
-            label = v.label,
-            count = 1,
-            type = 'item_weapon',
-            value = v.name,
-            usable = false,
-            rare = false,
-            ammo = v.ammo,
-            canGiveAmmo = (v.ammo ~= nil),
-			canRemove = true,
-			selected = false,
-			bind = nil,
-            stats = {
-                damage = hudDamage,
-                fireRate = hudSpeed,
-                ammoCapacity = hudCapacity,
-                accuracy = chudAccuracy,
-                range = hudRange
-            }
-        })
+			table.insert(playerWeaponData, {
+				label = v.label,
+				count = 1,
+				type = 'item_weapon',
+				value = v.name,
+				usable = false,
+				rare = false,
+				ammo = ammo,
+				canGiveAmmo = (v.ammo ~= nil),
+				canRemove = true,
+				selected = false,
+				bind = nil,
+				stats = {
+					damage = hudDamage,
+					fireRate = hudSpeed,
+					ammoCapacity = hudCapacity,
+					accuracy = chudAccuracy,
+					range = hudRange
+				}
+			})
+		end
 	end
 
 	return playerWeaponData
@@ -150,6 +168,8 @@ function GetInventoryData()
 				canRemove = v.canRemove,
 				context = false,
 				dropQuantity = 0,
+				giveQuantity = 0,
+				openMenu = false,
 				icon = v.icon
 			})
 		end
@@ -249,3 +269,68 @@ RegisterNUICallback('esx_inventory_hud:SetWeaponBinding', function(data, cb)
 
 	fastWeapons[tonumber(data.data.bind)] = data.data.value
 end)
+
+RegisterNUICallback('esx_inventory_hud:GetClosestsPlayers', function(data, cb)
+	local closestPlayer, closestPlayerDistance = ESX.Game.GetClosestPlayer()
+	local playerPed = PlayerPedId()
+
+	if closestPlayer == -1 or closestPlayerDistance > 3.0 then
+		cb(false)
+	else
+		local item, type = data.value, data.type
+		local playersNearby = ESX.Game.GetPlayersInArea(GetEntityCoords(playerPed), 3.0)
+		local players, playersClosest = {}, {}
+
+
+		for k, v in ipairs(playersNearby) do
+			players[GetPlayerServerId(v)] = true
+		end
+		
+		ESX.TriggerServerCallback('esx:getPlayerNames', function(returnedPlayers)
+			for playerId, playerName in pairs(returnedPlayers) do
+				table.insert(playersClosest, {
+					name = playerName,
+					playerId = playerId,
+					selected = false
+				})
+			end
+
+			cb({success = true, playersClosest = playersClosest})
+		end, players)
+
+		ESX.ShowNotification(('Found %s, they are %s unit(s) away'):format(GetPlayerName(closestPlayer), closestPlayerDistance))
+	end
+end)
+
+RegisterNUICallback('esx_inventory_hud:GiveItemToAPlayer', function(data, cb)
+	local playerPed = PlayerPedId()
+	local selectedPlayer, selectedPlayerId = GetPlayerFromServerId(data.data.playerToGive), data.data.playerToGive
+	local playersNearby = ESX.Game.GetPlayersInArea(GetEntityCoords(playerPed), 3.0)
+	playersNearby = ESX.Game.GetPlayersInArea(GetEntityCoords(playerPed), 3.0)
+	playersNearby = ESX.Table.Set(playersNearby)
+
+	if playersNearby[selectedPlayer] then
+		local selectedPlayerPed = GetPlayerPed(selectedPlayer)
+
+		if IsPedOnFoot(selectedPlayerPed) and not IsPedFalling(selectedPlayerPed) then
+			if data.data.type == 'item_weapon' then
+				TriggerServerEvent('esx:giveInventoryItem', selectedPlayerId, data.data.element.type, data.data.element.value, nil)
+				TriggerEvent('esx_inventory_hud:closeInventory')
+			else
+
+				local quantity = tonumber(data.data.element.giveQuantity)
+				if quantity and quantity > 0 and data.data.element.count >= quantity then
+					TriggerServerEvent('esx:giveInventoryItem', selectedPlayerId, data.data.element.type, data.data.element.value, quantity)
+					TriggerEvent('esx_inventory_hud:closeInventory')
+				else
+					TriggerEvent('esx_inventory_hud:closeInventory')
+					ESX.ShowNotification(_U('amount_invalid'))
+				end
+			end
+		else
+
+		end
+	end
+end)
+
+
