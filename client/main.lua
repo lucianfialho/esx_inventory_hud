@@ -80,9 +80,32 @@ Citizen.CreateThread(function()
 end)
 
 
+
 RegisterCommand("inventory", function()
-	TriggerEvent('esx_inventory_hud:openInventory')
+
+	local playerPed = PlayerPedId()
+	local vehicle = GetVehiclePedIsIn(playerPed, false)
+
+	if not IsPedFalling(playerPed) and GetPedInVehicleSeat(vehicle, -1) ~= playerPed then
+		TriggerEvent('esx_inventory_hud:openInventory', IsPedInVehicle(playerPed, vehicle))
+	else
+		ESX.ShowNotification('Are u leigo man? Cannot use inventory when u is a Vehicle')
+	end
+		
+
 end)
+
+RegisterCommand("seat", function()
+
+	local playerPed = PlayerPedId()
+	local vehicle = GetVehiclePedIsUsing(playerPed)
+
+	SetPedIntoVehicle(playerPed, vehicle, 1)
+
+end)
+
+
+RegisterKeyMapping("seat", "Toggle inventory", "keyboard", "h")
 
 RegisterKeyMapping("inventory", "Toggle inventory", "keyboard", "tab")
 
@@ -198,8 +221,13 @@ function GetInventoryData()
 end
 
 RegisterNetEvent('esx_inventory_hud:openInventory')
-AddEventHandler('esx_inventory_hud:openInventory', function(playerData)
-	DeleteSkinCam()
+AddEventHandler('esx_inventory_hud:openInventory', function(pedIsVehicle)
+	if pedIsVehicle then
+		DeleteSkinCam()
+		loadCamera(0, 3)
+	end
+	
+	
 	SetNuiFocus(false, false)
 	DisplayRadar(false)
 
@@ -207,7 +235,7 @@ AddEventHandler('esx_inventory_hud:openInventory', function(playerData)
 	local loadout = GetLoadoutData()
 	
 	ESX.TriggerServerCallback('esx_inventory_hud:GetPlayerPersonalData', function(playerPersonalData)
-		loadCamera(0, 3)
+		
 		SetNuiFocus(true, true)
 		SendNUIMessage({
 			showInventoryHud = true,
