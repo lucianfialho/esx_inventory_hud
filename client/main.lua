@@ -96,21 +96,6 @@ function ToogleInventory()
 	end
 end
 
-function dump(o)
-    if type(o) == 'table' then
-        local s = '{\n\n'
-        for k,v in pairs(o) do
-            if type(k) ~= 'number' then
-                k = '"'..k..'"' 
-            end
-            s = s .. '['..k..'] = ' .. dump(v) .. ',\n'
-        end
-        return s .. '}\n\n'
-    else
-        return tostring(o)
-    end
-end
-
 function GetLoadoutData()
 	ESX.PlayerData, playerWeaponData = ESX.GetPlayerData(), {}
 	local playerPed = PlayerPedId()
@@ -122,26 +107,34 @@ function GetLoadoutData()
 			_,hudDamage,hudSpeed,hudCapacity,hudAccuracy,hudRange = GetWeaponHudStats(weaponHash)
 			local ammo, label = GetAmmoInPedWeapon(playerPed, weaponHash)
 
-			table.insert(playerWeaponData, {
+			local weaponData = {
 				label = v.label,
 				count = 1,
 				type = 'item_weapon',
 				value = v.name,
+				bind = false,
 				usable = false,
 				rare = false,
 				ammo = ammo,
 				canGiveAmmo = (v.ammo ~= nil),
 				canRemove = true,
 				selected = false,
-				bind = nil,
 				stats = {
 					damage = hudDamage,
 					fireRate = hudSpeed,
 					ammoCapacity = hudCapacity,
-					accuracy = chudAccuracy,
+					accuracy = hudAccuracy,
 					range = hudRange
 				}
-			})
+			}
+
+			for i,j in pairs(fastWeapons) do
+				if j == v.name then
+					weaponData.bind = i
+				end
+			end
+			
+			table.insert(playerWeaponData, weaponData)
 		end
 	end
 
@@ -254,20 +247,40 @@ RegisterNUICallback('esx_inventory_hud:DropItem', function(data, cb)
 
 	TriggerServerEvent('esx:removeInventoryItem', data.data.type, data.data.value, tonumber(dropQuantity))
 	--  TODO: Adicionar validação de sucesso
+	
 	cb(true)
 
-	-- SetNuiFocus(false, false)
-	-- SendNUIMessage({
-	-- 	showInventoryHud = false,
-	-- })
+	TriggerEvent('esx_inventory_hud:closeInventory')
 end)
 
-RegisterNUICallback('esx_inventory_hud:SetWeaponBinding', function(data, cb)
-	if data.data.bind ~= nil then
-		fastWeapons[data.data.bind] = nil
+RegisterNUICallback('esx_inventory_hud:ToggleWeaponBinding', function(data, cb)
+	
+
+	if #data.data.weapon < 1 then
+		cb(false)
 	end
 
-	fastWeapons[tonumber(data.data.bind)] = data.data.value
+	local weaponBind = tonumber(data.data.weapon.bind)
+
+	if  weaponBind ~= false and 'number' == type(weaponBind) then
+		fastWeapons[weaponBind] = nil
+		fastWeapons[tonumber(data.data.bind)] = nil
+		cb(false)
+		return
+	end
+	
+	
+	
+	if data.data.bind ~= data.data.weapon.bind and data.data.weapon.bind then
+		
+		fastWeapons[data.data.bind] = nil
+		fastWeapons[data.data.weapon.bind] = nil
+		cb(false)
+		return
+	end
+
+	fastWeapons[tonumber(data.data.bind)] = data.data.weapon.value
+	cb(data.data.bind)
 end)
 
 RegisterNUICallback('esx_inventory_hud:GetClosestsPlayers', function(data, cb)
