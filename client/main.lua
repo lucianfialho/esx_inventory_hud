@@ -86,7 +86,7 @@ RegisterCommand("inventory", function()
 	local playerPed = PlayerPedId()
 	local vehicle = GetVehiclePedIsIn(playerPed, false)
 
-	if not IsPedFalling(playerPed) and GetPedInVehicleSeat(vehicle, -1) ~= playerPed then
+	if not IsPedFalling(playerPed) and GetPedInVehicleSeat(vehicle, -1) ~= playerPed and not IsEntityInWater(playerPed) then
 		print(IsPedInVehicle(playerPed, vehicle))
 		TriggerEvent('esx_inventory_hud:openInventory', IsPedInVehicle(playerPed, vehicle))
 	else
