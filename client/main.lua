@@ -96,18 +96,6 @@ RegisterCommand("inventory", function()
 
 end)
 
-RegisterCommand("seat", function()
-
-	local playerPed = PlayerPedId()
-	local vehicle = GetVehiclePedIsUsing(playerPed)
-
-	SetPedIntoVehicle(playerPed, vehicle, 1)
-
-end)
-
-
-RegisterKeyMapping("seat", "Toggle inventory", "keyboard", "h")
-
 RegisterKeyMapping("inventory", "Toggle inventory", "keyboard", "tab")
 
 function ToogleInventory() 
@@ -143,6 +131,8 @@ function GetLoadoutData()
 				canGiveAmmo = (v.ammo ~= nil),
 				canRemove = true,
 				selected = false,
+				giveAmmoQuantity = 0,
+				openMenuWeapon = false,
 				stats = {
 					damage = hudDamage,
 					fireRate = hudSpeed,
@@ -270,20 +260,34 @@ RegisterNUICallback('esx_inventory_hud:UseItem', function(data, cb)
 	TriggerEvent('esx_inventory_hud:closeInventory')
 end)
 
-RegisterNUICallback('esx_inventory_hud:DropItem', function(data, cb)	
-	local dropQuantity = data.data.dropQuantity > 0 and data.data.dropQuantity or data.data.count
-
-	TriggerServerEvent('esx:removeInventoryItem', data.data.type, data.data.value, tonumber(dropQuantity))
-	--  TODO: Adicionar validação de sucesso
+RegisterNUICallback('esx_inventory_hud:DropItem', function(data, cb)
+	local dict, anim = 'weapons@first_person@aim_rng@generic@projectile@sticky_bomb@', 'plant_floor'
+	ESX.Streaming.RequestAnimDict(dict)
 	
-	cb(true)
+	if data.data.type == 'item_weapon' then
+		TriggerEvent('esx_inventory_hud:closeInventory')
+		Citizen.Wait(1000)
+		TriggerServerEvent('esx:removeInventoryItem', data.data.type, data.data.value)
+		cb(true)
+	elseif data.data.type == 'item_standard' then
+		local dropQuantity = data.data.dropQuantity > 0 and data.data.dropQuantity or data.data.count
+		TriggerEvent('esx_inventory_hud:closeInventory')
+		Citizen.Wait(1000)
+		TriggerServerEvent('esx:removeInventoryItem', data.data.type, data.data.value, tonumber(dropQuantity))
+		cb(true)
+	else
+		cb(false)
+	end
+	
+	TaskPlayAnim(playerPed, dict, anim, 8.0, 1.0, 1000, 16, 0.0, false, false, false)
 
-	TriggerEvent('esx_inventory_hud:closeInventory')
+
 end)
+
+
 
 RegisterNUICallback('esx_inventory_hud:ToggleWeaponBinding', function(data, cb)
 	
-
 	if #data.data.weapon < 1 then
 		cb(false)
 	end
@@ -347,6 +351,7 @@ RegisterNUICallback('esx_inventory_hud:GiveItemToAPlayer', function(data, cb)
 	local playerPed = PlayerPedId()
 	local selectedPlayer, selectedPlayerId = GetPlayerFromServerId(data.data.playerToGive), data.data.playerToGive
 	local playersNearby = ESX.Game.GetPlayersInArea(GetEntityCoords(playerPed), 3.0)
+	
 	playersNearby = ESX.Game.GetPlayersInArea(GetEntityCoords(playerPed), 3.0)
 	playersNearby = ESX.Table.Set(playersNearby)
 
