@@ -82,12 +82,10 @@ end)
 
 
 RegisterCommand("inventory", function()
-
 	local playerPed = PlayerPedId()
 	local vehicle = GetVehiclePedIsIn(playerPed, false)
 
 	if not IsPedFalling(playerPed) and GetPedInVehicleSeat(vehicle, -1) ~= playerPed and not IsEntityInWater(playerPed) then
-		print(IsPedInVehicle(playerPed, vehicle))
 		TriggerEvent('esx_inventory_hud:openInventory', IsPedInVehicle(playerPed, vehicle))
 	else
 		ESX.ShowNotification('Are u leigo man? Did you wanna die?')
@@ -98,11 +96,13 @@ end)
 
 RegisterKeyMapping("inventory", "Toggle inventory", "keyboard", "tab")
 
-function ToogleInventory() 
+function ToogleInventory()
+	
 	inventoryIsOpen = not inventoryIsOpen
 
 	if inventoryIsOpen == true then
 		TriggerEvent('esx_inventory_hud:openInventory')
+		
 	else
 		TriggerEvent('esx_inventory_hud:closeInventory')
 	end
