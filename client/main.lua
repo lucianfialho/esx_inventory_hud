@@ -90,7 +90,7 @@ RegisterCommand("inventory", function()
 		print(IsPedInVehicle(playerPed, vehicle))
 		TriggerEvent('esx_inventory_hud:openInventory', IsPedInVehicle(playerPed, vehicle))
 	else
-		ESX.ShowNotification('Are u leigo man? Cannot use inventory when u is a Vehicle')
+		ESX.ShowNotification('Are u leigo man? Did you wanna die?')
 	end
 		
 
@@ -287,7 +287,7 @@ end)
 
 
 RegisterNUICallback('esx_inventory_hud:ToggleWeaponBinding', function(data, cb)
-	
+
 	if #data.data.weapon < 1 then
 		cb(false)
 	end
