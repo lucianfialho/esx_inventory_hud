@@ -21,7 +21,8 @@ shared_script {
 ui_page 'inventory_hud/dist/index.html'
 
 files {
-	'inventory_hud/dist/index.html'
+	'inventory_hud/dist/index.html',
+	'inventory_hud/dist/images/*.svg'
 }
 
 dependencies {
