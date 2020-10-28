@@ -67,7 +67,7 @@ Thanks for vuejs the boilerplate ;) [@calumari](https://github.com/calumari)
 
 # Legal
 ### License
-esx_inventory_hud - Legal and illegal weapon shops
+esx_inventory_hud - Inventory Hud for players
 
 Copyright (C) 2020-2020 Lucian Fialho
 
