@@ -325,12 +325,12 @@ RegisterNUICallback('esx_inventory_hud:GetClosestsPlayers', function(data, cb)
 		local item, type = data.value, data.type
 		local playersNearby = ESX.Game.GetPlayersInArea(GetEntityCoords(playerPed), 3.0)
 		local players, playersClosest = {}, {}
-
-
+		
 		for k, v in ipairs(playersNearby) do
 			players[GetPlayerServerId(v)] = true
 		end
 		
+
 		ESX.TriggerServerCallback('esx:getPlayerNames', function(returnedPlayers)
 			for playerId, playerName in pairs(returnedPlayers) do
 				table.insert(playersClosest, {
@@ -339,7 +339,7 @@ RegisterNUICallback('esx_inventory_hud:GetClosestsPlayers', function(data, cb)
 					selected = false
 				})
 			end
-
+			
 			cb({success = true, playersClosest = playersClosest})
 		end, players)
 
@@ -359,7 +359,8 @@ RegisterNUICallback('esx_inventory_hud:GiveItemToAPlayer', function(data, cb)
 		local selectedPlayerPed = GetPlayerPed(selectedPlayer)
 
 		if IsPedOnFoot(selectedPlayerPed) and not IsPedFalling(selectedPlayerPed) then
-			if data.data.type == 'item_weapon' then
+			if data.data.element.type == 'item_weapon' then
+				
 				TriggerServerEvent('esx:giveInventoryItem', selectedPlayerId, data.data.element.type, data.data.element.value, nil)
 				TriggerEvent('esx_inventory_hud:closeInventory')
 			else
