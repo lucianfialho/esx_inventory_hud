@@ -156,7 +156,7 @@ function GetLoadoutData()
 end
 
 function GetInventoryData()
-	local items, currentWeight = {}, 0
+	local items, currentWeight, inventory = {}, 0, {}
 	local playerPed = PlayerPedId()
 	
 	ESX.PlayerData = ESX.GetPlayerData()
@@ -207,8 +207,11 @@ function GetInventoryData()
 		end
 	end
 
+	inventory.items = items
+	inventory.weight = (currentWeight / ESX.PlayerData.maxWeight) * 100
+	inventory.maxWeight = ESX.PlayerData.maxWeight
 
-	return items
+	return inventory
 end
 
 RegisterNetEvent('esx_inventory_hud:openInventory')
@@ -217,9 +220,9 @@ AddEventHandler('esx_inventory_hud:openInventory', function(pedIsVehicle)
 	SetNuiFocus(false, false)
 	DisplayRadar(false)
 
-	local items = GetInventoryData()
+	local inventory = GetInventoryData()
 	local loadout = GetLoadoutData()
-	
+
 	ESX.TriggerServerCallback('esx_inventory_hud:GetPlayerPersonalData', function(playerPersonalData)
 		if not pedIsVehicle then
 			DeleteSkinCam()
@@ -229,7 +232,8 @@ AddEventHandler('esx_inventory_hud:openInventory', function(pedIsVehicle)
 		SetNuiFocus(true, true)
 		SendNUIMessage({
 			showInventoryHud = true,
-			items = items,
+			items = inventory.items,
+			weight = inventory.weight,
 			user = playerPersonalData,
 			loadout = loadout
 		})
