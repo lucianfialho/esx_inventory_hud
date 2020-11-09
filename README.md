@@ -1,4 +1,5 @@
 # esx_inventory_hud
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JP7ZWZG5D4U2E&currency_code=BRL)
 
 This resource for ESX add a inventory hud to fivem
 
@@ -60,6 +61,9 @@ npm run serve
 ## Tip
 
 Use the vue chrome extension for debug [vue-chrome-extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd?hl=pt-BR)
+
+You can buy me a coffee and encourage me to share more codes with the community :)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JP7ZWZG5D4U2E&currency_code=BRL)
 
 ## Thanks
 
