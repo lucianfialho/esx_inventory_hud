@@ -1,5 +1,7 @@
 # esx_inventory_hud
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JP7ZWZG5D4U2E&currency_code=BRL)
+[![Discord](https://discordapp.com/api/guilds/775510557825695804/widget.png?style=banner2)](https://discord.gg/Q2gRNUmMqQ)
+
 
 This resource for ESX add a inventory hud to fivem
 
