@@ -259,9 +259,10 @@ end)
 
 
 RegisterNUICallback('esx_inventory_hud:UseItem', function(data, cb)
-
-	TriggerServerEvent('esx:useItem', data.data)
-	TriggerEvent('esx_inventory_hud:closeInventory')
+	if data and data.data.usable == true then
+		TriggerServerEvent('esx:useItem', data.data.value)
+		TriggerEvent('esx_inventory_hud:closeInventory')
+	end
 end)
 
 RegisterNUICallback('esx_inventory_hud:DropItem', function(data, cb)
