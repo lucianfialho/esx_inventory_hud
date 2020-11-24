@@ -29,7 +29,7 @@ git submodule update --init --recursive
 
 ### 3. Install dependencies
 ```
-cd status_hud
+cd inventory_hud
 npm install
 ```
 
