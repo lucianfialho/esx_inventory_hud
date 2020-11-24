@@ -5,17 +5,17 @@ game 'gta5'
 description 'ESX Boilerplate'
 
 server_scripts {
+	'locale.lua',
+	'locales/en.lua',
+	'config.lua',
 	'server/*.lua'
 }
 
 client_scripts {
-	'client/*.lua',
-}
-
-shared_script {
-	'@es_extended/locale.lua',
-	'locales/*.lua',
+	'locale.lua',
+	'locales/en.lua',
 	'config.lua',
+	'client/*.lua',
 }
 
 ui_page 'inventory_hud/dist/index.html'
