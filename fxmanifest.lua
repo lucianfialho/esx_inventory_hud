@@ -7,6 +7,7 @@ description 'ESX Boilerplate'
 server_scripts {
 	'locale.lua',
 	'locales/en.lua',
+	'locales/de.lua',
 	'config.lua',
 	'server/*.lua'
 }
@@ -14,6 +15,7 @@ server_scripts {
 client_scripts {
 	'locale.lua',
 	'locales/en.lua',
+	'locales/de.lua',
 	'config.lua',
 	'client/*.lua',
 }
