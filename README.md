@@ -40,7 +40,7 @@ npm run build
 ## Installation
 - Import `esx_inventory_hud.sql` in your database
 - Add this to your `server.cfg`:
-
+- To use fav icons on inventory add on es_extended/server/main:164 `icon = item.icon` and on es_extended/server/common:29 `icon = v.icon` 
 ```
 ensure esx_inventory_hud
 ```
