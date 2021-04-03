@@ -181,14 +181,14 @@ function GetInventoryData()
 			})
 		end
 	end
-
+	
 	for k,v in pairs(ESX.PlayerData.accounts) do
 		
 		if v.name ~= 'bank' and v.money > 0 then
 			local formattedMoney = _U('locale_currency', ESX.Math.GroupDigits(v.money))
 			local canDrop = v.name ~= 'bank'
 			local icon
-
+			
 			if v.name == 'money' then
 				icon = 'money-bill-alt'
 			end
@@ -206,7 +206,7 @@ function GetInventoryData()
 			})
 		end
 	end
-
+	
 	inventory.items = items
 	inventory.weight = (currentWeight / ESX.PlayerData.maxWeight) * 100
 	inventory.maxWeight = ESX.PlayerData.maxWeight
@@ -216,19 +216,20 @@ end
 
 RegisterNetEvent('esx_inventory_hud:openInventory')
 AddEventHandler('esx_inventory_hud:openInventory', function(pedIsVehicle)
-	
+
 	SetNuiFocus(false, false)
 	DisplayRadar(false)
 
 	local inventory = GetInventoryData()
+	
 	local loadout = GetLoadoutData()
-
+	
 	ESX.TriggerServerCallback('esx_inventory_hud:GetPlayerPersonalData', function(playerPersonalData)
 		if not pedIsVehicle then
 			DeleteSkinCam()
 			loadCamera(0, 3)
 		end
-			
+		
 		SetNuiFocus(true, true)
 		SendNUIMessage({
 			showInventoryHud = true,

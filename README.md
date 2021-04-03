@@ -1,4 +1,9 @@
 # esx_inventory_hud
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JP7ZWZG5D4U2E&currency_code=BRL)
+
+## For more informations or doubt ...
+[![Discord](https://discordapp.com/api/guilds/775510557825695804/widget.png?style=banner2)](https://discord.gg/Q2gRNUmMqQ)
+
 
 This resource for ESX add a inventory hud to fivem
 
@@ -24,7 +29,7 @@ git submodule update --init --recursive
 
 ### 3. Install dependencies
 ```
-cd status_hud
+cd inventory_hud
 npm install
 ```
 
@@ -40,7 +45,7 @@ npm run build
 ## Installation
 - Import `esx_inventory_hud.sql` in your database
 - Add this to your `server.cfg`:
-
+- To use fav icons on inventory add on es_extended/server/main:164 `icon = item.icon` and on es_extended/server/common:29 `icon = v.icon` 
 ```
 ensure esx_inventory_hud
 ```
@@ -60,6 +65,9 @@ npm run serve
 ## Tip
 
 Use the vue chrome extension for debug [vue-chrome-extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd?hl=pt-BR)
+
+You can buy me a coffee and encourage me to share more codes with the community :)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JP7ZWZG5D4U2E&currency_code=BRL)
 
 ## Thanks
 
